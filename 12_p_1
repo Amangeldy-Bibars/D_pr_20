@@ -1,8 +1,8 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
  
-const char* ssid = "FLATRON";
-const char* password =  "123456";
+const char* ssid = "Beks";
+const char* password =  "b1e2k3s4";
 
 void setup() {
  
