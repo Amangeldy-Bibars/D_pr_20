@@ -1,0 +1,173 @@
+//https://simple-scada.com/forum/index.php?topic=114.0
+//https://www.st4makers.com/
+//Tileuli Arailym
+//110620
+//Amangeldy Bibars
+
+#include <OPC.h>
+#include <Bridge.h>
+#include <Ethernet.h>
+#include <SPI.h>
+ 
+// это переменная для работы с OPC
+OPCSerial aOPCSerial;
+ 
+// сигнальный диод 
+int diod = 13;
+ 
+// Цифровые
+int D0 = 0;
+int D1 = 1;
+int D2 = 2;
+int D4 = 4;
+int D7 = 7;
+int D8 = 8;
+int D12 = 12;
+ 
+// Цифровые ШИМ (или PWM)
+int D3 = 3;
+int D5 = 5;
+int D6 = 6;
+int D9 = 9;
+int D10 = 10;
+int D11 = 11;
+ 
+// Аналоговые входа
+int AI0 = 0;
+int AI1 = 1;
+int AI2 = 2;
+int AI3 = 3;
+int AI4 = 4;
+int AI5 = 5;
+ 
+// Это пример объявления виртуальной переменной, которая будет видна в 
+// Simple-Scada и её значение будет равно 99
+byte MyVirtualItem(const char *itemID, const opcOperation opcOP, const byte value){
+  return 99;
+}
+ 
+ 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Далее описаны процедуры которые описывают работу с Цифровыми ШИМ (PWM) входами
+ 
+int D3_Item(const char *itemID, const opcOperation opcOP, const int value){
+  // если Simple-Scada хочет записать новое значение
+  if (opcOP == opc_opwrite) {
+    analogWrite(D3, value); 
+  }
+    
+  return analogRead(D3);
+}
+ 
+int D5_Item(const char *itemID, const opcOperation opcOP, const int value){
+  // если Simple-Scada хочет записать новое значение
+  if (opcOP == opc_opwrite) {
+    analogWrite(D5, value); 
+  }
+    
+  return analogRead(D5);
+}
+ 
+int D6_Item(const char *itemID, const opcOperation opcOP, const int value){
+  // если Simple-Scada хочет записать новое значение
+  if (opcOP == opc_opwrite) {
+    analogWrite(D6, value); 
+  }
+    
+  return analogRead(D6);
+}
+ 
+int D9_Item(const char *itemID, const opcOperation opcOP, const int value){
+  // если Simple-Scada хочет записать новое значение
+  if (opcOP == opc_opwrite) {
+    analogWrite(D9, value); 
+  }
+    
+  return analogRead(D9);
+}
+ 
+int D10_Item(const char *itemID, const opcOperation opcOP, const int value){
+  // если Simple-Scada хочет записать новое значение
+  if (opcOP == opc_opwrite) {
+    analogWrite(D10, value); 
+  }
+    
+  return analogRead(D10);
+}
+ 
+int D11_Item(const char *itemID, const opcOperation opcOP, const int value){
+  // если Simple-Scada хочет записать новое значение
+  if (opcOP == opc_opwrite) {
+    analogWrite(D11, value); 
+  }
+    
+  return analogRead(D11);
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ 
+ 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Далее описываются процедуры для чтения значений Аналоговых входов
+ 
+int AI0_Item(const char *itemID, const opcOperation opcOP, const int value){
+  return analogRead(AI0);
+}
+ 
+int AI1_Item(const char *itemID, const opcOperation opcOP, const int value){
+  return analogRead(AI1);
+}
+ 
+int AI2_Item(const char *itemID, const opcOperation opcOP, const int value){
+  return analogRead(AI2);
+}
+ 
+int AI3_Item(const char *itemID, const opcOperation opcOP, const int value){
+  return analogRead(AI3);
+}
+ 
+int AI4_Item(const char *itemID, const opcOperation opcOP, const int value){
+  return analogRead(AI4);
+}
+ 
+int AI5_Item(const char *itemID, const opcOperation opcOP, const int value){
+  return analogRead(AI5);
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ 
+ 
+void setup()
+{
+  Serial.begin(9600);
+   
+  // ОБЯЗАТЕЛЬНО!
+  aOPCSerial.setup();
+ 
+  // для примера объявляем виртуальный тег, который всегда = 99
+  aOPCSerial.addItem("MyVirtualItem", opc_readwrite, opc_byte, MyVirtualItem);
+ 
+  //регистрируем цифровые ШИМ (PWM) для Simple-Scada, и даем им имена D3, D5... и так далее 
+  // эти имена нужно указывать в Simple-Scada в качестве Адреса
+  aOPCSerial.addItem("D3", opc_readwrite, opc_int, D3_Item);
+  aOPCSerial.addItem("D5", opc_readwrite, opc_int, D5_Item);
+  aOPCSerial.addItem("D6", opc_readwrite, opc_int, D6_Item);
+  aOPCSerial.addItem("D9", opc_readwrite, opc_int, D9_Item);
+  aOPCSerial.addItem("D10", opc_readwrite, opc_int, D10_Item);
+  aOPCSerial.addItem("D11", opc_readwrite, opc_int, D11_Item);
+ 
+  // регистрируем аналоговые входа для Simple-Scada, называя их AI0, AI1... и так далее
+  //  эти имена нужно указывать в Simple-Scada в качестве Адреса
+  aOPCSerial.addItem("AI0", opc_read, opc_int, AI0_Item);
+  aOPCSerial.addItem("AI1", opc_read, opc_int, AI1_Item);
+  aOPCSerial.addItem("AI2", opc_read, opc_int, AI2_Item);
+  aOPCSerial.addItem("AI3", opc_read, opc_int, AI3_Item);
+  aOPCSerial.addItem("AI4", opc_read, opc_int, AI4_Item);
+  aOPCSerial.addItem("AI5", opc_read, opc_int, AI5_Item);
+   
+  pinMode(diod, OUTPUT);
+}
+ 
+void loop()
+{
+  // ОБЯЗАТЕЛЬНО! Выполняем OPC-команды в цикле
+  aOPCSerial.processOPCCommands();
+}
